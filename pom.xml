@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.github.rainmanhhh</groupId>
+    <artifactId>spring-kotlin-parent</artifactId>
+    <version>1.0.5</version>
+    <relativePath /> <!-- lookup parent from repository -->
+  </parent>
+  <artifactId>gateway-server-spring-boot-starter</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>gateway-server-spring-boot-starter</name>
+  <description>starter for spring cloud gateway projects</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>de.codecentric</groupId>
+      <artifactId>spring-boot-admin-starter-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.projectreactor.kotlin</groupId>
+      <artifactId>reactor-kotlin-extensions</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlinx</groupId>
+      <artifactId>kotlinx-coroutines-reactor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-gateway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.rainmanhhh</groupId>
+      <artifactId>ez-jwt-spring-boot-starter</artifactId>
+      <version>1.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.rainmanhhh</groupId>
+      <artifactId>auth-sak-spring-boot-starter</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <repository>
+      <id>jitpack</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+</project>

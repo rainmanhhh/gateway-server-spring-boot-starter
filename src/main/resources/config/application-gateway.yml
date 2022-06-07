@@ -1,0 +1,29 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+spring:
+  application:
+    name: gateway
+  cache:
+    caffeine:
+      spec: expireAfterWrite=86400s
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+            allow-credentials: true
+            allowed-methods: '*'
+            allowed-headers: '*'
+            exposed-headers: '*'
+      discovery:
+        locator:
+          enabled: true
+server:
+  port: 8777
+  error:
+    include-exception: true
+    include-message: always
