@@ -12,4 +12,7 @@ class RuleController(
 
   @PutMapping
   fun putRules(@RequestBody rules: List<Rule>) = ruleService.updateRules(rules)
+
+  @GetMapping("/load")
+  suspend fun loadRules() = ruleService.loadRules()
 }

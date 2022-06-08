@@ -5,6 +5,7 @@ spring cloud网关
 - 基于jwt的用户鉴权（不包括登录），优先从http header `Authorization`中取token，取不到则尝试从cookie取（默认的cookie name为`JWT`），token必须包含schema前缀（默认为`Bearer`，用空格与token值分隔）
 - 支持微服务共享密钥service-api-key（SAK），集群内的微服务通过此网关互相调用时，可通过SAK互认，跳过用户权限控制，直接放行。使用此功能的微服务需要引入fy:auth-spring-boot-starter依赖，配置好SAK，再用feign客户端互访，请求必须通过网关中转
 - 可通过block users黑名单暂时禁用某些用户访问（用caffeine缓存实现，通过设置有效期与jwt token一致使对应用户的客户端token持续被阻止，直到它们自动过期）
+- 从同集群的微服务中加载权限规则(通过`ez.gateway.rule-uri`参数控制)，规则说明见[请求路径规则说明](#rules)
 
 #### 软件架构
 spring cloud
@@ -70,9 +71,11 @@ ez:
     ##user-field: user
     secret-key: 12345678901234567890123456789012 #某些算法对key的格式有要求，比如默认的HS256就要求key长度至少为256个字节（即32个字符）
     token-expire-seconds: 86400 #需要与caffeine写入过期时间（expireAfterWrite）保持一致，以使block users黑名单正常运作
+  gateway:
+    rule-uri: /BASE-DATA/rules #用于加载权限规则的路径，包括服务名（路径前还包括gateway服务本身的ip和端口）
 ```
 
-#### 请求路径规则说明
+#### <span id='rules'>请求路径规则说明</span>
 - 采用`AntPathMatcher`对请求路径进行匹配
 - 规则分为`硬规则`和`软规则`，如果未设置，则优先级大于0的视为硬规则（反之为软规则）
 - `硬规则`校验不通过时，立即抛出http 403错误（严格模式）

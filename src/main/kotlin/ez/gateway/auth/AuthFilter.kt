@@ -18,6 +18,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.util.AntPathMatcher
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -52,6 +53,7 @@ class AuthFilter(
     // call service from other client(browser/app)
     // read auth rules
     val ruleMap = ruleService.ruleMap
+    if (ruleMap.isEmpty()) throw ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "rules not loaded")
     // parse request path into group(service name) and sub path(service request path)
     val reqPath = exchange.request.uri.path ?: "/"
     val (group, path) =

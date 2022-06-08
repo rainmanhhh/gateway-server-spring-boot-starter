@@ -3,7 +3,7 @@ package ez.gateway.auth
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 
-@ConfigurationProperties("gateway.auth")
+@ConfigurationProperties("ez.gateway.auth")
 @Component
 class AuthFilterConfig {
   /**

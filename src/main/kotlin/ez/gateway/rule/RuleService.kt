@@ -1,9 +1,25 @@
 package ez.gateway.rule
 
+import ez.gateway.GatewayServerAutoConfig
+import kotlinx.coroutines.runBlocking
+import org.slf4j.LoggerFactory
+import org.springframework.cloud.context.config.annotation.RefreshScope
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
+import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.awaitBody
+import javax.annotation.PostConstruct
 
+@RefreshScope
 @Component
-class RuleService {
+class RuleService(
+  private val config: GatewayServerAutoConfig,
+  private val gatewayClient: WebClient
+) {
+  companion object {
+    private val logger = LoggerFactory.getLogger(RuleService::class.java)
+  }
+
   @Volatile
   var ruleMap: Map<String, List<Rule>> = mapOf()
     protected set
@@ -36,5 +52,34 @@ class RuleService {
     }
     groupMap[""] = commonList.apply { sortBy { it.priority } }
     ruleMap = groupMap
+  }
+
+  @PostConstruct
+  protected fun initLoad() = runBlocking {
+    loadRules()
+  }
+
+  /**
+   * @return true - load(and update) success; false -
+   */
+  suspend fun loadRules(): Boolean {
+    val ruleUri = config.ruleUri
+    return if (ruleUri.isNullOrBlank()) {
+      logger.warn("ruleUri is empty")
+      false
+    } else {
+      logger.info("loading rules")
+      try {
+        val rules = gatewayClient.get()
+          .uri(ruleUri).accept(MediaType.APPLICATION_JSON)
+          .retrieve()
+          .awaitBody<List<Rule>>()
+        updateRules(rules)
+        true
+      } catch (e: Throwable) {
+        logger.error("load rules failed", e)
+        false
+      }
+    }
   }
 }
