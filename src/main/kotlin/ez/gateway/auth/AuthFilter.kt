@@ -16,11 +16,13 @@ import org.springframework.context.ApplicationContext
 import org.springframework.core.Ordered
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.stereotype.Component
 import org.springframework.util.AntPathMatcher
 import org.springframework.web.server.ServerWebExchange
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 
+@Component
 class AuthFilter(
   private val config: AuthFilterConfig,
   private val serviceApiKey: ServiceApiKey,

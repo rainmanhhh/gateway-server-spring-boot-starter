@@ -70,8 +70,6 @@ ez:
     ##user-field: user
     secret-key: 12345678901234567890123456789012 #某些算法对key的格式有要求，比如默认的HS256就要求key长度至少为256个字节（即32个字符）
     token-expire-seconds: 86400 #需要与caffeine写入过期时间（expireAfterWrite）保持一致，以使block users黑名单正常运作
-##gateway:
-##  admin-path: /GatewayAdmin #gateway管理接口的根路径，大写开头，这样它们将使用一个独立的权限分组
 ```
 
 #### 请求路径规则说明

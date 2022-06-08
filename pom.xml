@@ -10,7 +10,7 @@
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
   <artifactId>gateway-server-spring-boot-starter</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <name>gateway-server-spring-boot-starter</name>
   <description>starter for spring cloud gateway projects</description>
   <dependencies>

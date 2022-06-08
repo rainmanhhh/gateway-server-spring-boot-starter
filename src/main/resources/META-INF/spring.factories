@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  ez.gateway.GatewayServerAutoConfig,\
-  ez.gateway.auth.AuthFilterConfig
+  ez.gateway.GatewayServerAutoConfig

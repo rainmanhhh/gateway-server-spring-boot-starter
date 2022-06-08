@@ -1,9 +1,12 @@
 package ez.gateway.rule
 
+import org.springframework.stereotype.Component
+
+@Component
 class RuleService {
   @Volatile
   var ruleMap: Map<String, List<Rule>> = mapOf()
-    private set
+    protected set
 
   /**
    * - associate rules by group
