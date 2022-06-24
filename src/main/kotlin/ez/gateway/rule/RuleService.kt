@@ -33,8 +33,8 @@ class RuleService(
     val groupMap = hashMapOf<String, MutableList<Rule>>()
     val commonList = arrayListOf<Rule>()
     for (rule in rules) {
-      val priority = rule.priority ?: 0
-      if (rule.strict == null) rule.strict = priority > 0
+      rule.validate()
+      if (rule.strict == null) rule.strict = rule.priority!! > 0
       val group = rule.group!!
       if (group == "") commonList.add(rule)
       else {
