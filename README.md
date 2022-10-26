@@ -76,15 +76,20 @@ ez:
 ```
 
 #### <span id='rules'>请求路径规则说明</span>
-- 采用`AntPathMatcher`对请求路径进行匹配
-- 规则分为`硬规则`和`软规则`，如果未设置，则优先级大于0的视为硬规则（反之为软规则）
+- 每一条规则包含以下字段
+  1. `group` 分组，对应微服务名，全大写，例如`SOME-SERVICE`。`group`为空字符串表示公共规则，会被复制到所有分组
+  2. `pattern` 请求路径，glob表达式，程序用`AntPathMatcher`对它进行匹配
+  3. `type` 规则类型，与shiro基本一致，但只有`user`而没有`authc`（不判断cookie中的rememberMe）
+  4. `param` 规则参数，它将被传递给filter
+  5. `priority` 优先级，整数，越小表示优先级越高
+  6. `strict` 是否为硬规则（严格模式），如果未设置，则优先级大于0的视为硬规则，小于等于0为软规则
+  7. `remark` 备注
 - `硬规则`校验不通过时，立即抛出http 403错误（严格模式）
 - `软规则`校验不通过时，允许继续匹配下一条规则（宽松模式）
-- 规则类型（type）与shiro基本一致，但只有`user`而没有`authc`（不判断cookie中的rememberMe）
-- `rest`类型规则说明：`param`为权限名，与`perm`的不同之处在于可按"权限名:HttpMethod"方式授权，
+- `rest`类型规则说明：`param`字段应填写权限名，与`perm`的不同之处在于可按"权限名:HttpMethod"方式授权，
   例如权限名为"some-right"，给某用户或角色授权时，
-  "some-right"表示授予全部的增删改查权限(HttpMethod为GET,POST等任意值均放行)，
-  "some-right:GET"表示只授予GET权限
+  `param`的值为"some-right"表示授予全部的增删改查权限(HttpMethod为GET,POST等任意值均放行)，
+  `param`的值为"some-right:GET"表示只授予GET权限
 
 #### 通过命令行访问管理接口
 例子：重载权限规则的bash脚本
