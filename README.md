@@ -3,7 +3,7 @@
 #### 介绍
 spring cloud网关
 - 基于jwt的用户鉴权（不包括登录），优先从http header `Authorization`中取token，取不到则尝试从cookie取（默认的cookie name为`JWT`），token必须包含schema前缀（默认为`Bearer`，用空格与token值分隔）
-- 支持微服务共享密钥service-api-key（SAK），集群内的微服务通过此网关互相调用时，可通过SAK互认，跳过用户权限控制，直接放行。使用此功能的微服务需要引入fy:auth-spring-boot-starter依赖，配置好SAK，再用feign客户端互访，请求必须通过网关中转
+- 支持微服务共享密钥service-api-key（SAK），集群内的微服务通过此网关互相调用时，可通过SAK互认，跳过用户权限控制，直接放行。使用此功能的微服务需要引入com.github.rainmanhhh:auth-sak-spring-boot-starter依赖，配置好SAK，再用feign客户端互访，请求必须通过网关中转
 - 可通过block users黑名单暂时禁用某些用户访问（用caffeine缓存实现，通过设置有效期与jwt token一致使对应用户的客户端token持续被阻止，直到它们自动过期）
 - 从同集群的微服务中加载权限规则(通过`ez.gateway.rule-uri`参数控制)，规则说明见[请求路径规则说明](#rules)
 
@@ -100,7 +100,7 @@ curl -X GET \
 ```
 请求头中的`X-SAK`即service-api-key，用于服务集群内部互相调用时免登录鉴权，生成方法：
 - 先随机生成一个盐值`salt`，例如`12345678901234567890123456789012`（32位）
-- 把配置文件中的属性`ez.auth.service-api-key.value`（假设为`abcdef`）与`salt`相加，得到`abcdef12345678901234567890123456789012`
+- 把配置文件中的属性`ez.auth.service-api-key.value`（假设为`abcdef`）与`salt`拼接，得到`abcdef12345678901234567890123456789012`
 - 然后做一次MD5（32位小写），得到`ab861b9123c3e184d413410a3dfa8a55`
 - 最后将`salt`拼接到上一步得到的MD5尾部，得到`ab861b9123c3e184d413410a3dfa8a5512345678901234567890123456789012`
 
