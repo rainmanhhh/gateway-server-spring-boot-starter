@@ -47,4 +47,6 @@ class Rule {
     Objects.requireNonNull(type, "Rule.type should not be null")
     Objects.requireNonNull(priority, "Rule.priority should not be null")
   }
+
+  fun id() = "[group:`$group`, pattern:`$pattern`]"
 }

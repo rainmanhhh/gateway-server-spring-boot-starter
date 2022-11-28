@@ -86,6 +86,7 @@ class AuthFilter(
     val ruleList = ruleMap[group] ?: ruleMap[""] ?: emptyList()
 
     // check path with rules
+    logger.debug("check reqPath: {}", reqPath)
     /**
      * a "soft" rule means if checking not pass, loop will continue to next rule(unless it's the last matching rule);
      * a "hard" rule means the chain immediately throw 403 error if checking not pass;
@@ -95,22 +96,24 @@ class AuthFilter(
     for (rule in ruleList) {
       if (rule.match(path)) {
         val checkResult = rule.check(exchange, user)
-        logger.debug(
-          "group:{}, pattern:{}, reqPath:{}, check result: {}",
-          rule.group,
-          rule.pattern,
-          reqPath,
-          checkResult
-        )
-        if (checkResult) return true
-        else {
-          if (rule.strict == true) HttpStatus.FORBIDDEN.thr(RuleCheckError(rule))
-          else failedSoftRule = rule // continue to next rule
+        if (checkResult) {
+          logger.debug("auth check return true. matched rule: {}", rule.id())
+          return true
+        } else {
+          if (rule.strict == true) {
+            logger.debug("auth check return false. failed strict rule: {}", rule.id())
+            HttpStatus.FORBIDDEN.thr(RuleCheckError(rule))
+          } else failedSoftRule = rule // continue to next rule
         }
       } // else continue to next rule
     }
-    if (failedSoftRule != null) HttpStatus.FORBIDDEN.thr(RuleCheckError(failedSoftRule))
-    return true
+    if (failedSoftRule == null) {
+      logger.debug("auth check return true. no 403 error occurred")
+      return true
+    } else {
+      logger.debug("auth check return false. failed soft rule: {}", failedSoftRule.id())
+      HttpStatus.FORBIDDEN.thr(RuleCheckError(failedSoftRule))
+    }
   }
 
   override suspend fun afterChain(exchange: ServerWebExchange) {
