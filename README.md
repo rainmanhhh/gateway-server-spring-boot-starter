@@ -34,7 +34,7 @@ spring:
             ##allowed-methods: '*'
             ##allowed-headers: '*'
             ##exposed-headers: '*'
-            allowed-origin-patterns: #cors允许的域名表达式，不可配置为'*'否则前端请求无法带cookie
+            allowed-origin-patterns: #cors允许的域名表达式，不可配置为'*'否则前端请求无法带cookie. 运行时重载无效
               - 'http://localhost'
               - 'http://localhost:3000'
       ##discovery:
