@@ -136,7 +136,7 @@ class AuthFilter(
         if (user.perms.contains(restPerm)) true
         else {
           //methodValue is enum HttpMethod::name, so it should be uppercase(GET,POST,...)
-          val operationPerm = restPerm + ":" + exchange.request.methodValue
+          val operationPerm = restPerm + ":" + exchange.request.method.name()
           user.perms.contains(operationPerm)
         }
       }

@@ -8,7 +8,7 @@ import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.awaitBody
-import javax.annotation.PostConstruct
+import jakarta.annotation.PostConstruct
 
 @RefreshScope
 @Component
@@ -60,7 +60,7 @@ class RuleService(
   }
 
   /**
-   * @return true - load(and update) success; false -
+   * @return true - load(and update) success; false - failed
    */
   suspend fun loadRules(): Boolean {
     val ruleUri = config.ruleUri

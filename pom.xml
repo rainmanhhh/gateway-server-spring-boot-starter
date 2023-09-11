@@ -6,11 +6,11 @@
   <parent>
     <groupId>com.github.rainmanhhh</groupId>
     <artifactId>spring-kotlin-parent</artifactId>
-    <version>1.0.7</version>
+    <version>2.0.1</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
   <artifactId>gateway-server-spring-boot-starter</artifactId>
-  <version>1.0.5</version>
+  <version>2.0.1-SNAPSHOT</version>
   <name>gateway-server-spring-boot-starter</name>
   <description>starter for spring cloud gateway projects</description>
   <dependencies>
@@ -45,12 +45,12 @@
     <dependency>
       <groupId>com.github.rainmanhhh</groupId>
       <artifactId>ez-jwt-spring-boot-starter</artifactId>
-      <version>1.0.6</version>
+      <version>2.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.github.rainmanhhh</groupId>
       <artifactId>auth-sak-spring-boot-starter</artifactId>
-      <version>1.0.5</version>
+      <version>2.0.1</version>
     </dependency>
   </dependencies>
 
