@@ -86,9 +86,9 @@ ez:
   7. `remark` 备注
 - `硬规则`校验不通过时，立即抛出http 403错误（严格模式）
 - `软规则`校验不通过时，允许继续匹配下一条规则（宽松模式）
-- `rest`类型规则说明：`param`字段应填写权限名，与`perm`的不同之处在于可按"权限名:HttpMethod"方式授权，
+- `rest`类型规则说明：`param`字段应填写权限名，与`perm`的不同之处在于可按"权限名:HttpMethod"方式授权（HttpMethod取值只能为大写的POST,DELETE,PUT,POST），
   例如权限名为"some-right"，给某用户或角色授权时，
-  `user.perms`的值为"some-right:*"表示授予全部的增删改查权限(HttpMethod为POST,DELETE,PUT,POST均放行)，
+  `user.perms`的值为"some-right:*"表示授予全部的增删改查权限(4种HttpMethod均放行)，
   `user.perms`的值为"some-right:GET"表示只授予GET权限
 - 权限校验流程说明
   1. 通过gateway访问集群下的任意uri时，先根据请求路径确定使用哪个规则组，例如`/Foo/bar`会使用组`Foo`，而`/foo/bar`会使用公共规则组（注意：公共规则组的规则也会被复制到所有其他组中）
