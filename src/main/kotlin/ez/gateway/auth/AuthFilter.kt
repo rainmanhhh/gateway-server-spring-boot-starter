@@ -88,9 +88,9 @@ class AuthFilter(
     // check path with rules
     logger.debug("check reqPath: {}", reqPath)
     /**
+     * if `rule.strict` is true, it's a "hard" rule, otherwise it's a "soft" rule.
      * a "soft" rule means if checking not pass, loop will continue to next rule(unless it's the last matching rule);
      * a "hard" rule means the chain immediately throw 403 error if checking not pass;
-     * rule with priority greater than 0 is a "hard" rule
      */
     var failedSoftRule: Rule? = null
     for (rule in ruleList) {
@@ -133,7 +133,7 @@ class AuthFilter(
       "perms" -> user.perms.contains(param ?: "")
       "rest" -> {
         val restPerm = param ?: ""
-        if (user.perms.contains(restPerm)) true
+        if (user.perms.contains(restPerm) || user.perms.contains("$restPerm:*")) true
         else {
           //methodValue is enum HttpMethod::name, so it should be uppercase(GET,POST,...)
           val operationPerm = restPerm + ":" + exchange.request.method.name()
