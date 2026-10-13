@@ -16,11 +16,13 @@ import org.springframework.context.ApplicationContext
 import org.springframework.core.Ordered
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Component
 import org.springframework.util.AntPathMatcher
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
 import java.net.URLDecoder
+import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Component
@@ -70,9 +72,14 @@ class AuthFilter(
         val tokenInCookie =
           exchange.request.cookies.getFirst(config.cookieName)?.value?.substringBefore(';')
         if (tokenInCookie == null) u
-        else jwtUtil.verifyTokenWithPrefix(URLDecoder.decode(tokenInCookie, StandardCharsets.UTF_8))
+        else try {
+          jwtUtil.verifyTokenWithPrefix(URLDecoder.decode(tokenInCookie, StandardCharsets.UTF_8))
+        } catch (e: ExpiredJwtException) {
+          renewOrThrow(e, exchange)
+        }
       } else u
     } catch (e: ExpiredJwtException) {
+      // expired token from Authorization header: don't renew for API clients
       HttpStatus.UNAUTHORIZED.thr(e)
     }
     // check whether the user is blocked
@@ -117,6 +124,45 @@ class AuthFilter(
   }
 
   override suspend fun afterChain(exchange: ServerWebExchange) {
+  }
+
+  /**
+   * sliding renewal: if a cookie-sourced token expired within [AuthFilterConfig.renewGraceSeconds],
+   * re-issue a new token, replace the cookie and continue the chain silently;
+   * otherwise clear the cookie and throw 401.
+   * the claims are trustworthy because jjwt verifies signature before checking expiration.
+   */
+  private fun renewOrThrow(e: ExpiredJwtException, exchange: ServerWebExchange): JwtUser {
+    val expiredAt = e.claims.expiration?.time
+    val elapsedMillis = expiredAt?.let { System.currentTimeMillis() - it } ?: Long.MAX_VALUE
+    if (config.renewGraceSeconds <= 0 || elapsedMillis > config.renewGraceSeconds * 1000) {
+      logger.info("jwt expired beyond grace window({}s), clear cookie and reject. elapsed: {}ms",
+        config.renewGraceSeconds, elapsedMillis)
+      clearExpiredCookie(exchange)
+      HttpStatus.UNAUTHORIZED.thr(e)
+    }
+    val user = jwtUtil.extractUser(e.claims)
+    val newToken = jwtUtil.createTokenWithPrefix(user)
+    // write the new token back to the cookie, aligned with how AuthFilter reads it (URLDecoder)
+    exchange.response.cookies.add(
+      config.cookieName,
+      ResponseCookie.from(config.cookieName, URLEncoder.encode(newToken, StandardCharsets.UTF_8))
+        .path("/")
+        .maxAge(jwtUtil.config.tokenExpireSeconds)
+        .build()
+    )
+    logger.info("renewed expired jwt within grace window. user: {}, expired {}ms ago", user.id, elapsedMillis)
+    return user
+  }
+
+  /**
+   * tell the browser to delete the cookie via Set-Cookie with maxAge=0
+   */
+  private fun clearExpiredCookie(exchange: ServerWebExchange) {
+    exchange.response.cookies.add(
+      config.cookieName,
+      ResponseCookie.from(config.cookieName, "").path("/").maxAge(0).build()
+    )
   }
 
   private fun Rule.match(path: String) = pathMatcher.match(pattern!!, path)
