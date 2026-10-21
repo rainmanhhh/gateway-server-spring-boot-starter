@@ -29,6 +29,13 @@ class GatewayServerAutoConfig(
    */
   var ruleUri: String? = null
 
+  /**
+   * whether to inject SAK header(service-api-key) into requests forwarded to downstream services.
+   * downstream services with `ez.auth.web-mvc.require-sak: true` depend on this header,
+   * so disabling it makes every such service reject gateway traffic with 401.
+   */
+  var injectSak = true
+
   @Bean
   fun gatewayClient(
     @Value("\${server.port}") port: String

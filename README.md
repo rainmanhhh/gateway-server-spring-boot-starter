@@ -4,6 +4,7 @@
 spring cloud网关
 - 基于jwt的用户鉴权（不包括登录），优先从http header `Authorization`中取token，取不到则尝试从cookie取（默认的cookie name为`JWT`），token必须包含schema前缀（默认为`Bearer`，用空格与token值分隔）
 - 支持微服务共享密钥service-api-key（SAK），集群内的微服务通过此网关互相调用时，可通过SAK互认，跳过用户权限控制，直接放行。使用此功能的微服务需要引入com.github.rainmanhhh:auth-sak-spring-boot-starter依赖，配置好SAK，再用feign客户端互访，请求必须通过网关中转
+- 转发到下游服务前会把网关自身的SAK写入请求头（默认`X-SAK`，可用`ez.gateway.inject-sak`关闭）。该头总是覆盖（overwrite）请求中已有的同名头，因此外部伪造的`X-SAK`不会被透传给下游；未配置`ez.auth.service-api-key.value`时不注入
 - 可通过block users黑名单暂时禁用某些用户访问（用caffeine缓存实现，通过设置有效期与jwt token一致使对应用户的客户端token持续被阻止，直到它们自动过期）
 - 从同集群的微服务中加载权限规则(通过`ez.gateway.rule-uri`参数控制)，规则说明见[请求路径规则说明](#rules)
 
@@ -72,6 +73,7 @@ ez:
     secret-key: 12345678901234567890123456789012 #某些算法对key的格式有要求，比如默认的HS256就要求key长度至少为256个字节（即32个字符）
     token-expire-seconds: 86400 #需要与caffeine写入过期时间（expireAfterWrite）保持一致，以使block users黑名单正常运作
   gateway:
+    ##inject-sak: true #转发到下游服务时是否注入SAK请求头。下游服务开启入站SAK校验（auth-webmvc的`ez.auth.web-mvc.require-sak`）依赖此头，关闭后这些服务会返回401
     rule-uri: /BASE-DATA/rules #用于加载权限规则的路径，包括服务名（不写协议、ip和端口，则表示请求发送到gateway服务自身所属的集群）
 ```
 
